@@ -1,0 +1,38 @@
+name: Deploy to docker hub
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/*.yaml
+      - src/**/*.ts
+      - Dockerfile
+      - package.json
+      - package-lock.json
+      - tools/**/*.js
+
+jobs:
+  build:
+    name: Building a new docker image
+    runs-on: ubuntu-latest
+    environment: main
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - run: npm install
+      - run: npm run build
+      - name: Getting project info
+        id: project-info
+        run: node tools/info.js
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          IMAGE_TAG: ${{ steps.project-info.outputs.version }}
+        run: |
+          docker build -t nsfilho/webhook:$IMAGE_TAG --network host .
+          docker push nsfilho/webhook:$IMAGE_TAG
