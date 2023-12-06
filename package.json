@@ -1,10 +1,10 @@
 {
     "name": "webhook",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Simple webhook caller",
     "main": "index.js",
     "scripts": {
-        "start": "node src/index.js",
+        "start": "node index.js",
         "dev": "DEBUG=core,utils nodemon src/index.ts",
         "lint": "eslint --fix src/**/*.ts",
         "prepare": "husky install",
